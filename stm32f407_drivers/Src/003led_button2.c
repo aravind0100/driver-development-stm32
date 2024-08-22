@@ -1,0 +1,53 @@
+/*
+ * 002led_button.c
+ *
+ *  Created on: Aug 13, 2024
+ *      Author: crazyGGG
+ */
+
+
+#include "stm32f407xx.h"
+
+#define HIGH 1
+#define LOW  0
+#define BTN_PRESSED LOW
+
+void delayb(void)
+{
+	for(uint32_t i=0;i< 500000/2;i++);
+}
+int main(void)
+{
+
+	GPIO_Handle_t GpioLed,GPIOBtn;  //create a variable for gpio handle, use gpio structure
+
+	GpioLed.pGPIOx = GPIOA; // select the port, here D port
+	GpioLed.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_8; // pin configuration , include gpio driver.h file
+	GpioLed.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUT; //pin mode is output
+	GpioLed.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST; // speed can be anything
+	GpioLed.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;//use case one push pull
+	GpioLed.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_NO_PUPD;
+
+	GPIO_PeriClockControl(GPIOA, ENABLE);
+	GPIO_Init(&GpioLed);
+
+	GPIOBtn.pGPIOx = GPIOB; // select the port, here D port
+	GPIOBtn.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_12; // pin configuration , include gpio driver.h file
+	GPIOBtn.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IN; //pin mode is output
+	GPIOBtn.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST; // speed can be anything
+	GPIOBtn.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
+
+	GPIO_PeriClockControl(GPIOB, ENABLE);
+	GPIO_Init(&GPIOBtn);
+	while(1)
+	{
+		if(GPIO_ReadFromInputPin(GPIOB, GPIO_PIN_NO_12)== BTN_PRESSED)
+		{
+			delayb();
+			GPIO_ToggleOutputPin(GPIOA,GPIO_PIN_NO_8 );
+		}
+
+
+	}
+	return 0;
+}
